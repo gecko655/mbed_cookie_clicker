@@ -1,0 +1,5 @@
+data/main.cpp.i
+data/mbed-rtos.lib.i
+data/C12832.lib.i
+data/MMA7660.lib.i
+data/mbed.bld.i

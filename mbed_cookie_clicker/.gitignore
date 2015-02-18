@@ -79,3 +79,4 @@ cscope.*
 # hg
 *.hgignore
 */.hg*
+Debug

@@ -15,7 +15,10 @@ BusOut colorled(p23, p24, p25);
 
 Mutex cookie_mutex;
 Mutex print_mutex;
-long cookie = 0;
+Ticker tippyTicker;
+Ticker printTicker;
+
+int centCookie = 0;
 int tippy;
 int cost;
 
@@ -59,34 +62,29 @@ void lightChange() {
     }
 }
 void print(){
-    print_mutex.lock();
-    lcd.cls();
     lcd.locate(0, 0);
-    lcd.printf("Cookie: %d\n", cookie);
+    lcd.printf("Cookie: %d", centCookie/100);
     lcd.locate(64, 0);
     lcd.printf("Tippy cost:%d",cost);
-    lcd.locate(64, 0);
-    lcd.printf("Tippy cost:%d",cost);
-    lcd.print_bm(tippyBmp,1+(cookie-1)*tippyBmp.xSize,16);
+    lcd.locate(0, 16);
+    lcd.printf("Tippy :%d",tippy);
+    lcd.print_bm(tippyBmp,64,16-(centCookie/100)%4);
     lcd.copy_to_lcd();
-    print_mutex.unlock();
 }
 
 void bakeCookie() {
     cookie_mutex.lock();
-    cookie++;
-    print();
+    centCookie+=100;
     lightChange();
     cookie_mutex.unlock();
 }
 
 void tippy_buy() {
     cookie_mutex.lock();
-    if(cookie>=cost){
-        cookie-=cost;
+    if(centCookie>=cost*100){
+        centCookie-=cost*100;
         tippy++;
         cost+=tippy*10;
-        print();
     }
     cookie_mutex.unlock();
 }
@@ -101,6 +99,13 @@ void mma_read(void const* args) {
         Thread::wait(10);
     }
 }
+
+void tippyBake(){
+    cookie_mutex.lock();
+    centCookie+=10*tippy;
+    cookie_mutex.unlock();
+}
+
 void init(){
     t.start();
     if (MMA.testConnection())
@@ -115,11 +120,14 @@ void init(){
     tippy = 0;
     cost=10;
 }
+
 int main() {
-    Thread mma_thread(mma_read);
-    button.rise(tippy_buy);
     init();
+    Thread mma_thread(mma_read);//, NULL, osPriorityRealtime);
+    //tippyTicker.attach(tippyBake,0.1);
+    button.rise(tippy_buy);
+    //printTicker.attach(print,0.1);
     while (true) {
-        Thread::wait(1000);
+        Thread::wait(100000000);
     }
 }

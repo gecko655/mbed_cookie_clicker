@@ -62,6 +62,7 @@ void lightChange() {
     }
 }
 void print(){
+    //lcd.cls();
     lcd.locate(0, 0);
     lcd.printf("Cookie: %d", centCookie/100);
     lcd.locate(64, 0);
@@ -123,11 +124,11 @@ void init(){
 
 int main() {
     init();
-    Thread mma_thread(mma_read);//, NULL, osPriorityRealtime);
-    //tippyTicker.attach(tippyBake,0.1);
+    Thread mma_thread(mma_read, NULL, osPriorityRealtime);
+    tippyTicker.attach(tippyBake,0.1);
     button.rise(tippy_buy);
-    //printTicker.attach(print,0.1);
+    printTicker.attach(print,1.0);
     while (true) {
-        Thread::wait(100000000);
+        Thread::wait(2000);
     }
 }

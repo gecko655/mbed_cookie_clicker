@@ -36,7 +36,7 @@ inline double getJerk(double x, double y, double z, int time) {
     return sqrt(square(lastAX - x) + square(lastAY - y) + square(lastAZ - z))/(time-lastTime)*1000;
 }
 bool schmittTriger = false;
-double thresholdUpper = 100;//[m/s/s/s]
+double thresholdUpper = 175.0;//[m/s/s/s]
 double thresholdLower = 0.01;//[m/s/s/s]
 bool isShaked(double ax, double ay, double az) {
     bool ret = false;
@@ -61,16 +61,20 @@ void lightChange() {
         colorled = 0;
     }
 }
-void print(){
-    //lcd.cls();
-    lcd.locate(0, 0);
-    lcd.printf("Cookie: %d", centCookie/100);
-    lcd.locate(64, 0);
-    lcd.printf("Tippy cost:%d",cost);
-    lcd.locate(0, 16);
-    lcd.printf("Tippy :%d",tippy);
-    lcd.print_bm(tippyBmp,64,16-(centCookie/100)%4);
-    lcd.copy_to_lcd();
+void print(void const* args){
+    while(true){
+        lcd.locate(0, 0);
+        lcd.printf("Cookie:%d", centCookie/100);
+        lcd.locate(50, 0);
+        lcd.printf("Tippy cost:%d",cost);
+        lcd.locate(0, 16);
+        lcd.printf("Tippy: %d",tippy);
+        for(int i=0;i<(tippy<5?tippy:5);i++){
+            lcd.print_bm(tippyBmp,38+i*(1+tippyBmp.xSize),16-(centCookie*(i+1)/100)%4);
+        }
+        lcd.copy_to_lcd();
+        Thread::wait(100);
+    }
 }
 
 void bakeCookie() {
@@ -86,6 +90,7 @@ void tippy_buy() {
         centCookie-=cost*100;
         tippy++;
         cost+=tippy*10;
+        lcd.cls();
     }
     cookie_mutex.unlock();
 }
@@ -127,7 +132,7 @@ int main() {
     Thread mma_thread(mma_read, NULL, osPriorityRealtime);
     tippyTicker.attach(tippyBake,0.1);
     button.rise(tippy_buy);
-    printTicker.attach(print,1.0);
+    Thread print_thread(print);
     while (true) {
         Thread::wait(2000);
     }

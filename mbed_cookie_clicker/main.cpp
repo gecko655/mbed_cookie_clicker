@@ -68,7 +68,7 @@ void print(void const* args){
         lcd.locate(50, 0);
         lcd.printf("Tippy cost:%d",cost);
         lcd.locate(0, 16);
-        lcd.printf("Tippy: %d",tippy);
+        lcd.printf("Tippy:%d",tippy);
         for(int i=0;i<(tippy<5?tippy:5);i++){
             lcd.print_bm(tippyBmp,38+i*(1+tippyBmp.xSize),16-(centCookie/100+i)%4);
         }

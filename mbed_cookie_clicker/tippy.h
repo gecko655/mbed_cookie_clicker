@@ -2,7 +2,7 @@
  * tippy.h
  *
  *  Created on: 2015/02/19
- *      Author: akihiro
+ *      Author: gecko655
  */
 
 #include "C12832.h"

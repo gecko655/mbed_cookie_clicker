@@ -7,7 +7,7 @@
 
 #include "tippy.h"
 
-DigitalOut myled(LED1);
+DigitalOut led(LED1);
 InterruptIn button(p14);
 MMA7660 MMA(p28, p27);
 C12832 lcd(p5, p7, p6, p8, p11);
@@ -70,7 +70,7 @@ void print(void const* args){
         lcd.locate(0, 16);
         lcd.printf("Tippy: %d",tippy);
         for(int i=0;i<(tippy<5?tippy:5);i++){
-            lcd.print_bm(tippyBmp,38+i*(1+tippyBmp.xSize),16-(centCookie*(i+1)/100)%4);
+            lcd.print_bm(tippyBmp,38+i*(1+tippyBmp.xSize),16-(centCookie/100+i)%4);
         }
         lcd.copy_to_lcd();
         Thread::wait(100);
